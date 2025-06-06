@@ -87,9 +87,19 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-    .film-options {
-      display: none;
-      margin-top: 10px;
+    .wh-tab {
+      flex:1;
+      background: #eee;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 0;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .wh-tab.active {
+      background: #3366ff;
+      color: #fff;
     }
     @media (max-width: 600px) {
       .container {
@@ -105,18 +115,25 @@
     <h1>Калькулятор стоимости услуг</h1>
 
     <label class="label-icon"><i class="fas fa-warehouse"></i> Выберите склад:</label>
-    <select id="warehouse">
+    <div style="display: flex; gap:10px; margin-bottom: 6px;">
+      <button id="btn-wb" class="wh-tab active" onclick="switchWarehouseTab('wb')">Wildberries</button>
+      <button id="btn-ozon" class="wh-tab" onclick="switchWarehouseTab('ozon')">OZON</button>
+    </div>
+    <select id="warehouse-wb" style="display:block; margin-bottom:10px;">
       <option value="">— Не выбрано —</option>
-      <option value="koledino">Коледино WB</option>
-      <option value="tula">Тула, Алексин WB</option>
-      <option value="kazan">Казань WB</option>
-      <option value="elektrostal">Электросталь WB</option>
-      <option value="krasnodar">Краснодар WB</option>
-      <option value="nevinomisk">Невиномысск WB</option>
-      <option value="podolsk">Подольск WB</option>
-      <option value="obukhovo">Обухово WB</option>
-      <option value="ryazan">Рязань WB</option>
-      <option value="grivno">Гривно OZON</option>
+      <option value="koledino">Коледино</option>
+      <option value="tula">Тула, Алексин</option>
+      <option value="kazan">Казань</option>
+      <option value="elektrostal">Электросталь</option>
+      <option value="krasnodar">Краснодар</option>
+      <option value="nevinomisk">Невиномысск</option>
+      <option value="podolsk">Подольск</option>
+      <option value="obukhovo">Обухово</option>
+      <option value="ryazan">Рязань</option>
+    </select>
+    <select id="warehouse-ozon" style="display:none; margin-bottom:10px;">
+      <option value="">— Не выбрано —</option>
+      <option value="grivno">Гривно</option>
     </select>
 
     <label class="label-icon"><i class="fas fa-ruler-horizontal"></i> Длина (см):</label>
@@ -142,33 +159,18 @@
 
     <div class="section-title">Упаковка</div>
     <div class="select-group">
-      <label>Выберите упаковку:</label>
-      <select id="packing" onchange="toggleFilmOptions()">
+      <label>Выберите категорию упаковки:</label>
+      <select id="packing-category" onchange="updatePackingOptions()">
         <option value="">— Не выбрано —</option>
-        <option value="film">Термоусадочная пленка (динамичный расчет)</option>
-        <option data-price="22">ВПП 10x10</option>
+        <option value="ВПП">ВПП</option>
+        <option value="БОПП">БОПП</option>
+        <option value="Курьерский">Курьерский</option>
+        <option value="Zip-Lock">Zip-Lock</option>
+        <option value="Фольгированный">Фольгированный</option>
       </select>
-    </div>
 
-    <div class="film-options" id="filmOptions">
-      <label>Толщина пленки (мкм):</label>
-      <select id="filmThickness">
-        <option value="">— Не выбрано —</option>
-        <option value="0.07">12.5 POF</option>
-        <option value="0.12">15 POF</option>
-        <option value="0.14">20 POF</option>
-        <option value="0.14">25 POF</option>
-        <option value="0.2">30 ПВХ</option>
-        <option value="0.2">35 ПВХ</option>
-        <option value="0.0002">40 ПВД (см²)</option>
-        <option value="0.0003">45 ПВД (см²)</option>
-        <option value="0.0004">50 ПВД (см²)</option>
-        <option value="0.2">ПВД рукав 75+ мкм</option>
-      </select>
-      <label>Ширина пленки (см):</label>
-      <input type="number" id="filmWidth" placeholder="например: 30">
-      <label>Длина пленки (см):</label>
-      <input type="number" id="filmLength" placeholder="например: 100">
+      <label>Выберите упаковку:</label>
+      <select id="packing"></select>
     </div>
 
     <button onclick="calculate()"><i class="fas fa-calculator"></i> Рассчитать стоимость</button>
@@ -177,9 +179,60 @@
   </div>
 
   <script>
-    function toggleFilmOptions() {
-      const packing = document.getElementById('packing').value;
-      document.getElementById('filmOptions').style.display = packing === 'film' ? 'block' : 'none';
+    const packingOptions = {
+      "ВПП": [
+        { name: "ВПП 10x10", price: 22 },
+        { name: "ВПП 15x15", price: 24 },
+        { name: "ВПП 20x20", price: 27 },
+        { name: "ВПП 30x30", price: 32 },
+        { name: "ВПП 40x40", price: 42 },
+        { name: "ВПП 50x50", price: 45 },
+        { name: "ВПП 60x50", price: 51 }
+      ],
+      "БОПП": [
+        { name: "БОПП 10x8", price: 18 },
+        { name: "БОПП 15x12", price: 20 },
+        { name: "БОПП 27x12", price: 20 },
+        { name: "БОПП 38x15", price: 21 }
+      ],
+      "Курьерский": [
+        { name: "Курьерский 10x15", price: 15 },
+        { name: "Курьерский 15x21", price: 18 },
+        { name: "Курьерский 16.5x24", price: 19 },
+        { name: "Курьерский 19x24", price: 20 },
+        { name: "Курьерский 24x32", price: 22 },
+        { name: "Курьерский 30x40", price: 26 },
+        { name: "Курьерский 34x46", price: 31 },
+        { name: "Курьерский 36x50", price: 34 }
+      ],
+      "Zip-Lock": [
+        { name: "Zip-Lock цветной 60x70", price: 80 },
+        { name: "Zip-Lock черный 60x70", price: 70 }
+      ],
+      "Фольгированный": [
+        { name: "Фольгированный дой-пак 13x16+3", price: 33 }
+      ]
+    };
+
+    function updatePackingOptions() {
+      const category = document.getElementById('packing-category').value;
+      const packingSelect = document.getElementById('packing');
+      packingSelect.innerHTML = '<option value="">— Не выбрано —</option>';
+      if (packingOptions[category]) {
+        packingOptions[category].forEach(opt => {
+          const option = document.createElement('option');
+          option.textContent = opt.name;
+          option.dataset.price = opt.price;
+          packingSelect.appendChild(option);
+        });
+      }
+    }
+
+    function switchWarehouseTab(tab) {
+      document.getElementById('btn-wb').classList.toggle('active', tab === 'wb');
+      document.getElementById('btn-ozon').classList.toggle('active', tab === 'ozon');
+      document.getElementById('warehouse-wb').style.display = tab === 'wb' ? 'block' : 'none';
+      document.getElementById('warehouse-ozon').style.display = tab === 'ozon' ? 'block' : 'none';
     }
 
     function calculate() {
@@ -189,7 +242,9 @@
       const height = +document.getElementById('height').value || 0;
       const options = document.querySelectorAll('.option:checked');
       const packingSelect = document.getElementById('packing');
-      const warehouse = document.getElementById('warehouse').value;
+      const warehouse = document.getElementById('warehouse-wb').style.display === 'block'
+        ? document.getElementById('warehouse-wb').value
+        : document.getElementById('warehouse-ozon').value;
 
       const productVolume = (length * width * height) / 1000;
       const boxVolume = 60 * 40 * 40 / 1000;
@@ -209,17 +264,8 @@
         else deliveryPricePerBox = deliveryMatrix[warehouse][2] || deliveryMatrix[warehouse][0];
       }
 
-      let packingPrice = 0;
-      if (packingSelect.value === 'film') {
-        const filmWidth = +document.getElementById('filmWidth').value || 0;
-        const filmLength = +document.getElementById('filmLength').value || 0;
-        const filmRate = +document.getElementById('filmThickness').value || 0;
-        if (filmRate < 0.01) packingPrice = filmWidth * filmLength * filmRate; // см² * цена за см²
-        else packingPrice = filmLength * filmRate; // длина * цена за см
-      } else {
-        packingPrice = +packingSelect.options[packingSelect.selectedIndex]?.dataset.price || 0;
-        packingPrice *= quantity;
-      }
+      let packingPrice = +packingSelect.options[packingSelect.selectedIndex]?.dataset.price || 0;
+      packingPrice *= quantity;
 
       let total = packingPrice + (requiredBoxes * deliveryPricePerBox);
       options.forEach(option => {
@@ -234,7 +280,5 @@
         Доставка: ${deliveryPricePerBox} ₽/короб`;
     }
   </script>
-
 </body>
 </html>
-
