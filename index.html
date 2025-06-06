@@ -87,6 +87,10 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
+    .film-options {
+      display: none;
+      margin-top: 10px;
+    }
     @media (max-width: 600px) {
       .container {
         margin: 10px;
@@ -99,6 +103,21 @@
 
   <div class="container">
     <h1>Калькулятор стоимости услуг</h1>
+
+    <label class="label-icon"><i class="fas fa-warehouse"></i> Выберите склад:</label>
+    <select id="warehouse">
+      <option value="">— Не выбрано —</option>
+      <option value="koledino">Коледино WB</option>
+      <option value="tula">Тула, Алексин WB</option>
+      <option value="kazan">Казань WB</option>
+      <option value="elektrostal">Электросталь WB</option>
+      <option value="krasnodar">Краснодар WB</option>
+      <option value="nevinomisk">Невиномысск WB</option>
+      <option value="podolsk">Подольск WB</option>
+      <option value="obukhovo">Обухово WB</option>
+      <option value="ryazan">Рязань WB</option>
+      <option value="grivno">Гривно OZON</option>
+    </select>
 
     <label class="label-icon"><i class="fas fa-ruler-horizontal"></i> Длина (см):</label>
     <input type="number" id="length" placeholder="Например: 30">
@@ -124,43 +143,32 @@
     <div class="section-title">Упаковка</div>
     <div class="select-group">
       <label>Выберите упаковку:</label>
-      <select id="packing">
+      <select id="packing" onchange="toggleFilmOptions()">
         <option value="">— Не выбрано —</option>
-        <optgroup label="Термоусадочная пленка">
-          <option data-price="5">Термоусадочная плёнка 5 мкм</option>
-          <option data-price="10">Термоусадочная плёнка 10 мкм</option>
-          <option data-price="15">Термоусадочная плёнка 15 мкм</option>
-          <option data-price="20">Термоусадочная плёнка 20 мкм</option>
-          <option data-price="25">Термоусадочная плёнка 25 мкм</option>
-          <option data-price="30">Термоусадочная плёнка 30 мкм</option>
-          <option data-price="35">Термоусадочная плёнка 35 мкм</option>
-          <option data-price="40">Термоусадочная плёнка 40 мкм</option>
-          <option data-price="45">Термоусадочная плёнка 45 мкм</option>
-          <option data-price="50">Термоусадочная плёнка 50 мкм</option>
-        </optgroup>
+        <option value="film">Термоусадочная пленка (динамичный расчет)</option>
         <option data-price="22">ВПП 10x10</option>
-        <option data-price="24">ВПП 15x15</option>
-        <option data-price="27">ВПП 20x20</option>
-        <option data-price="32">ВПП 30x30</option>
-        <option data-price="42">ВПП 40x40</option>
-        <option data-price="45">ВПП 50x50</option>
-        <option data-price="51">ВПП 60x50</option>
-        <option data-price="18">БОПП 10x8</option>
-        <option data-price="20">БОПП 15x12</option>
-        <option data-price="20">БОПП 27x12</option>
-        <option data-price="21">БОПП 38x15</option>
-        <option data-price="15">Курьерский 10x15</option>
-        <option data-price="18">Курьерский 15x21</option>
-        <option data-price="19">Курьерский 16.5x24</option>
-        <option data-price="20">Курьерский 19x24</option>
-        <option data-price="22">Курьерский 24x32</option>
-        <option data-price="26">Курьерский 30x40</option>
-        <option data-price="31">Курьерский 34x46</option>
-        <option data-price="34">Курьерский 36x50</option>
-        <option data-price="80">Zip-Lock цветной 60x70</option>
-        <option data-price="70">Zip-Lock черный 60x70</option>
-        <option data-price="33">Фольгированный дой-пак 13x16+3</option>
       </select>
+    </div>
+
+    <div class="film-options" id="filmOptions">
+      <label>Толщина пленки (мкм):</label>
+      <select id="filmThickness">
+        <option value="">— Не выбрано —</option>
+        <option value="0.07">12.5 POF</option>
+        <option value="0.12">15 POF</option>
+        <option value="0.14">20 POF</option>
+        <option value="0.14">25 POF</option>
+        <option value="0.2">30 ПВХ</option>
+        <option value="0.2">35 ПВХ</option>
+        <option value="0.0002">40 ПВД (см²)</option>
+        <option value="0.0003">45 ПВД (см²)</option>
+        <option value="0.0004">50 ПВД (см²)</option>
+        <option value="0.2">ПВД рукав 75+ мкм</option>
+      </select>
+      <label>Ширина пленки (см):</label>
+      <input type="number" id="filmWidth" placeholder="например: 30">
+      <label>Длина пленки (см):</label>
+      <input type="number" id="filmLength" placeholder="например: 100">
     </div>
 
     <button onclick="calculate()"><i class="fas fa-calculator"></i> Рассчитать стоимость</button>
@@ -169,24 +177,64 @@
   </div>
 
   <script>
+    function toggleFilmOptions() {
+      const packing = document.getElementById('packing').value;
+      document.getElementById('filmOptions').style.display = packing === 'film' ? 'block' : 'none';
+    }
+
     function calculate() {
       const quantity = +document.getElementById('quantity').value || 0;
+      const length = +document.getElementById('length').value || 0;
+      const width = +document.getElementById('width').value || 0;
+      const height = +document.getElementById('height').value || 0;
       const options = document.querySelectorAll('.option:checked');
       const packingSelect = document.getElementById('packing');
-      const packingPrice = +packingSelect.options[packingSelect.selectedIndex].dataset.price || 0;
+      const warehouse = document.getElementById('warehouse').value;
 
-      let total = packingPrice * quantity;
+      const productVolume = (length * width * height) / 1000;
+      const boxVolume = 60 * 40 * 40 / 1000;
+      const unitsPerBox = productVolume ? Math.floor(boxVolume / productVolume) : 1;
+      const requiredBoxes = Math.ceil(quantity / unitsPerBox);
 
+      const deliveryMatrix = {
+        koledino: [430, 290, 200], tula: [430, 360, 290], kazan: [850, 650, 590], elektrostal: [430, 360, 290],
+        krasnodar: [910, 780, 700], nevinomisk: [910, 780, 700], podolsk: [3770], obukhovo: [3770],
+        ryazan: [520, 390, 280], grivno: [520, 390, 280]
+      };
+
+      let deliveryPricePerBox = 0;
+      if (deliveryMatrix[warehouse]) {
+        if (requiredBoxes <= 5) deliveryPricePerBox = deliveryMatrix[warehouse][0];
+        else if (requiredBoxes <= 10) deliveryPricePerBox = deliveryMatrix[warehouse][1] || deliveryMatrix[warehouse][0];
+        else deliveryPricePerBox = deliveryMatrix[warehouse][2] || deliveryMatrix[warehouse][0];
+      }
+
+      let packingPrice = 0;
+      if (packingSelect.value === 'film') {
+        const filmWidth = +document.getElementById('filmWidth').value || 0;
+        const filmLength = +document.getElementById('filmLength').value || 0;
+        const filmRate = +document.getElementById('filmThickness').value || 0;
+        if (filmRate < 0.01) packingPrice = filmWidth * filmLength * filmRate; // см² * цена за см²
+        else packingPrice = filmLength * filmRate; // длина * цена за см
+      } else {
+        packingPrice = +packingSelect.options[packingSelect.selectedIndex]?.dataset.price || 0;
+        packingPrice *= quantity;
+      }
+
+      let total = packingPrice + (requiredBoxes * deliveryPricePerBox);
       options.forEach(option => {
-        const price = +option.dataset.price;
-        total += price * quantity;
+        total += (+option.dataset.price) * quantity;
       });
 
       const resultBlock = document.getElementById('result');
       resultBlock.style.display = 'block';
-      resultBlock.innerHTML = `<strong>Итоговая стоимость:</strong> ${total.toFixed(2)} ₽`;
+      resultBlock.innerHTML = `<strong>Итоговая стоимость:</strong> ${total.toFixed(2)} ₽<br>
+        Коробов нужно: <strong>${requiredBoxes}</strong><br>
+        По ${unitsPerBox} товаров в коробке<br>
+        Доставка: ${deliveryPricePerBox} ₽/короб`;
     }
   </script>
 
 </body>
 </html>
+
