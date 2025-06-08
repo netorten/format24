@@ -87,26 +87,15 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-    .wh-tab {
-      flex:1;
-      background: #eee;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 0;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background .2s;
-    }
-    .wh-tab.active {
-      background: #3366ff;
-      color: #fff;
-    }
+    .search-warehouse-block input[type="text"] {margin-bottom:0;}
     @media (max-width: 600px) {
       .container {
         margin: 10px;
         padding: 20px;
       }
     }
+    #thermal-length-block {margin-top:10px;}
+    #thermal-length-block input[type="number"] {width:100%; margin-top:6px;}
   </style>
 </head>
 <body>
@@ -115,49 +104,50 @@
     <h1>Калькулятор стоимости услуг</h1>
 
     <label class="label-icon"><i class="fas fa-warehouse"></i> Выберите склад:</label>
-    <div style="display: flex; gap:10px; margin-bottom: 6px;">
-      <button id="btn-wb" class="wh-tab active" onclick="switchWarehouseTab('wb')">Wildberries</button>
-      <button id="btn-ozon" class="wh-tab" onclick="switchWarehouseTab('ozon')">OZON</button>
+    <div class="search-warehouse-block" style="margin-bottom:14px;">
+      <input
+        type="text"
+        id="warehouse-search"
+        placeholder="Начните вводить склад..."
+        oninput="filterWarehouses()"
+        style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc;"
+      >
+      <select id="warehouse-select" style="width:100%;margin-top:8px;">
+        <!-- Динамически -->
+      </select>
     </div>
-    <select id="warehouse-wb" style="display:block; margin-bottom:10px;">
-      <option value="">— Не выбрано —</option>
-      <option value="koledino">Коледино</option>
-      <option value="tula">Тула, Алексин</option>
-      <option value="kazan">Казань</option>
-      <option value="elektrostal">Электросталь</option>
-      <option value="krasnodar">Краснодар</option>
-      <option value="nevinomisk">Невиномысск</option>
-      <option value="podolsk">Подольск</option>
-      <option value="obukhovo">Обухово</option>
-      <option value="ryazan">Рязань</option>
-    </select>
-    <select id="warehouse-ozon" style="display:none; margin-bottom:10px;">
-      <option value="">— Не выбрано —</option>
-      <option value="grivno">Гривно</option>
-    </select>
 
-    <label class="label-icon"><i class="fas fa-ruler-horizontal"></i> Длина (см):</label>
+    <label class="label-icon"><i class="fas fa-ruler-horizontal"></i> Длина (см) товара:</label>
     <input type="number" id="length" placeholder="Например: 30">
 
-    <label class="label-icon"><i class="fas fa-ruler-horizontal"></i> Ширина (см):</label>
-    <input type="number" id="width" placeholder="Например: 20">
+    <label class="label-icon"><i class="fas fa-ruler-horizontal"></i> Ширина (см) товара:</label>
+<input type="number" id="width" placeholder="Например: 20">
 
-    <label class="label-icon"><i class="fas fa-ruler-vertical"></i> Высота (см):</label>
-    <input type="number" id="height" placeholder="Например: 15">
+<label class="label-icon"><i class="fas fa-ruler-vertical"></i> Высота (см) товара:</label>
+<input type="number" id="height" placeholder="Например: 15">
 
-    <label class="label-icon"><i class="fas fa-boxes-stacked"></i> Количество:</label>
-    <input type="number" id="quantity" placeholder="Например: 100">
+    
+<label class="label-icon"><i class="fas fa-boxes-stacked"></i> Количество:</label>
+<input type="number" id="quantity" placeholder="Например: 100">
+
+    <label class="label-icon"><i class="fas fa-weight-hanging"></i> Вес (кг) товара:</label>
+<input type="number" id="weight" placeholder="Например: 0.4" step="0.01">
 
     <div class="section-title">Дополнительные услуги</div>
-    <div class="checkbox-group">
-      <label><input type="checkbox" class="option" data-price="20"> Проверка на брак по сложному ТЗ</label>
-      <label><input type="checkbox" class="option" data-price="40"> Заполнение короба крафт-бумагой</label>
-      <label><input type="checkbox" class="option" data-price="5"> Прикрепление новой бирки</label>
-      <label><input type="checkbox" class="option" data-price="3"> Вложить подарок или флаер</label>
-      <label><input type="checkbox" class="option" data-price="5"> Удаление ниток на изделии</label>
-    </div>
-
-    <div class="section-title">Упаковка</div>
+<div class="checkbox-group">
+  <label><input type="checkbox" class="option" data-price="2"> Привоз товара на склад + пересчёт — 2₽</label>
+  <label><input type="checkbox" class="option" data-price="4"> Проверка товара — 4₽</label>
+  <label><input type="checkbox" class="option" data-price="4"> Упаковка стандарт — 4₽</label>
+  <label><input type="checkbox" class="option" data-price="6"> Упаковка нестандарт (цены оговариваются) — от 6₽</label>
+  <label><input type="checkbox" class="option" data-price="2"> Проверка на брак — 2₽</label>
+  <label><input type="checkbox" class="option" data-price="2"> Вкладыши (листовки) — 2₽</label>
+  <label><input type="checkbox" class="option" data-price="9"> Упаковка в зип-пакеты — 9₽</label>
+  <label><input type="checkbox" class="option" data-price="9"> Упаковка в зип-пакеты с клеевым слоем — 9₽</label>
+  <label><input type="checkbox" class="option" data-price="5"> Проверка размеров — 5₽</label>
+  <label><input type="checkbox" class="option" data-price="4"> Вскрытие возвратов — 4₽</label>
+  <label><input type="checkbox" class="option" data-price="15"> Возвратный короб (работа + маркировка работы) — от 15₽</label>
+</div>
+<div class="section-title">Упаковка</div>
     <div class="select-group">
       <label>Выберите категорию упаковки:</label>
       <select id="packing-category" onchange="updatePackingOptions()">
@@ -167,10 +157,15 @@
         <option value="Курьерский">Курьерский</option>
         <option value="Zip-Lock">Zip-Lock</option>
         <option value="Фольгированный">Фольгированный</option>
+        <option value="Термоусадочная">Термоусадочная плёнка</option>
       </select>
-
       <label>Выберите упаковку:</label>
       <select id="packing"></select>
+      <div id="thermal-length-block" style="display:none;">
+        <label>Введите длину (см) плёнки на 1 товар:</label>
+        <input type="number" id="thermal-length" placeholder="Длина в см">
+        <small style="color: #888;">от 5 до 100 микрон, цена: 0,2 ₽ за 1 см длины на каждую единицу</small>
+      </div>
     </div>
 
     <button onclick="calculate()"><i class="fas fa-calculator"></i> Рассчитать стоимость</button>
@@ -179,60 +174,103 @@
   </div>
 
   <script>
-    const packingOptions = {
-      "ВПП": [
-        { name: "ВПП 10x10", price: 22 },
-        { name: "ВПП 15x15", price: 24 },
-        { name: "ВПП 20x20", price: 27 },
-        { name: "ВПП 30x30", price: 32 },
-        { name: "ВПП 40x40", price: 42 },
-        { name: "ВПП 50x50", price: 45 },
-        { name: "ВПП 60x50", price: 51 }
-      ],
-      "БОПП": [
-        { name: "БОПП 10x8", price: 18 },
-        { name: "БОПП 15x12", price: 20 },
-        { name: "БОПП 27x12", price: 20 },
-        { name: "БОПП 38x15", price: 21 }
-      ],
-      "Курьерский": [
-        { name: "Курьерский 10x15", price: 15 },
-        { name: "Курьерский 15x21", price: 18 },
-        { name: "Курьерский 16.5x24", price: 19 },
-        { name: "Курьерский 19x24", price: 20 },
-        { name: "Курьерский 24x32", price: 22 },
-        { name: "Курьерский 30x40", price: 26 },
-        { name: "Курьерский 34x46", price: 31 },
-        { name: "Курьерский 36x50", price: 34 }
-      ],
-      "Zip-Lock": [
-        { name: "Zip-Lock цветной 60x70", price: 80 },
-        { name: "Zip-Lock черный 60x70", price: 70 }
-      ],
-      "Фольгированный": [
-        { name: "Фольгированный дой-пак 13x16+3", price: 33 }
-      ]
-    };
+    // Новый список складов
+    if (typeof window.warehousesList === 'undefined') {
+  window.warehousesList = [
+    { value: "koledino", label: "Коледино (Wildberries)" },
+    { value: "tula", label: "Тула, Алексин (Wildberries)" },
+    { value: "kazan", label: "Казань (Wildberries)" },
+    { value: "elektrostal", label: "Электросталь (Wildberries)" },
+    { value: "krasnodar", label: "Краснодар (Wildberries)" },
+    { value: "nevinomisk", label: "Невиномысск (Wildberries)" },
+    { value: "podolsk", label: "Подольск (Wildberries)" },
+    { value: "obukhovo", label: "Обухово (Wildberries)" },
+    { value: "ryazan", label: "Рязань (Wildberries)" },
+    { value: "grivno", label: "Гривно (OZON)" }
+  ];
+}
 
+    function renderWarehouses(filter = "") {
+      const select = document.getElementById('warehouse-select');
+      select.innerHTML = '<option value="">— Не выбрано —</option>';
+      warehousesList
+        .filter(wh => wh.label.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(wh => {
+          const option = document.createElement('option');
+          option.value = wh.value;
+          option.textContent = wh.label;
+          select.appendChild(option);
+        });
+    }
+
+    function filterWarehouses() {
+      const query = document.getElementById('warehouse-search').value;
+      renderWarehouses(query);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => renderWarehouses());
+
+    // Упаковки (остается без изменений)
+    if (typeof window.packingOptions === 'undefined') {
+      window.packingOptions = {
+        "ВПП": [
+          { name: "ВПП 10x10", price: 22 },
+          { name: "ВПП 15x15", price: 24 },
+          { name: "ВПП 20x20", price: 27 },
+          { name: "ВПП 30x30", price: 32 },
+          { name: "ВПП 40x40", price: 42 },
+          { name: "ВПП 50x50", price: 45 },
+          { name: "ВПП 60x50", price: 51 }
+        ],
+        "БОПП": [
+          { name: "БОПП 10x8", price: 18 },
+          { name: "БОПП 15x12", price: 20 },
+          { name: "БОПП 27x12", price: 20 },
+          { name: "БОПП 38x15", price: 21 }
+        ],
+        "Курьерский": [
+          { name: "Курьерский 10x15", price: 15 },
+          { name: "Курьерский 15x21", price: 18 },
+          { name: "Курьерский 16.5x24", price: 19 },
+          { name: "Курьерский 19x24", price: 20 },
+          { name: "Курьерский 24x32", price: 22 },
+          { name: "Курьерский 30x40", price: 26 },
+          { name: "Курьерский 34x46", price: 31 },
+          { name: "Курьерский 36x50", price: 34 }
+        ],
+        "Zip-Lock": [
+          { name: "Zip-Lock цветной 60x70", price: 80 },
+          { name: "Zip-Lock черный 60x70", price: 70 }
+        ],
+        "Фольгированный": [
+          { name: "Фольгированный дой-пак 13x16+3", price: 33 }
+        ],
+        "Термоусадочная": [
+          { name: "Термоусадочная плёнка (от 5 до 100 микрон)", price: 0.2 }
+        ]
+      };
+    }
+    
     function updatePackingOptions() {
       const category = document.getElementById('packing-category').value;
       const packingSelect = document.getElementById('packing');
+      const thermalBlock = document.getElementById('thermal-length-block');
       packingSelect.innerHTML = '<option value="">— Не выбрано —</option>';
-      if (packingOptions[category]) {
-        packingOptions[category].forEach(opt => {
-          const option = document.createElement('option');
-          option.textContent = opt.name;
-          option.dataset.price = opt.price;
-          packingSelect.appendChild(option);
-        });
+      if (category === "Термоусадочная") {
+        packingSelect.style.display = "none";
+        thermalBlock.style.display = "block";
+      } else {
+        packingSelect.style.display = "";
+        thermalBlock.style.display = "none";
+        if (window.packingOptions[category]) {
+          window.packingOptions[category].forEach(opt => {
+            const option = document.createElement('option');
+            option.textContent = opt.name;
+            option.dataset.price = opt.price;
+            packingSelect.appendChild(option);
+          });
+        }
       }
-    }
-
-    function switchWarehouseTab(tab) {
-      document.getElementById('btn-wb').classList.toggle('active', tab === 'wb');
-      document.getElementById('btn-ozon').classList.toggle('active', tab === 'ozon');
-      document.getElementById('warehouse-wb').style.display = tab === 'wb' ? 'block' : 'none';
-      document.getElementById('warehouse-ozon').style.display = tab === 'ozon' ? 'block' : 'none';
     }
 
     function calculate() {
@@ -240,15 +278,18 @@
       const length = +document.getElementById('length').value || 0;
       const width = +document.getElementById('width').value || 0;
       const height = +document.getElementById('height').value || 0;
+      const weight = +document.getElementById('weight').value || 0;
       const options = document.querySelectorAll('.option:checked');
       const packingSelect = document.getElementById('packing');
-      const warehouse = document.getElementById('warehouse-wb').style.display === 'block'
-        ? document.getElementById('warehouse-wb').value
-        : document.getElementById('warehouse-ozon').value;
+      const category = document.getElementById('packing-category').value;
+      const warehouse = document.getElementById('warehouse-select').value;
 
       const productVolume = (length * width * height) / 1000;
       const boxVolume = 60 * 40 * 40 / 1000;
-      const unitsPerBox = productVolume ? Math.floor(boxVolume / productVolume) : 1;
+      const maxBoxWeight = 25; // кг
+      const unitsPerBoxByVolume = productVolume ? Math.floor(boxVolume / productVolume) : 1;
+      const unitsPerBoxByWeight = weight ? Math.floor(maxBoxWeight / weight) : 1;
+      const unitsPerBox = Math.max(1, Math.min(unitsPerBoxByVolume, unitsPerBoxByWeight));
       const requiredBoxes = Math.ceil(quantity / unitsPerBox);
 
       const deliveryMatrix = {
@@ -264,8 +305,14 @@
         else deliveryPricePerBox = deliveryMatrix[warehouse][2] || deliveryMatrix[warehouse][0];
       }
 
-      let packingPrice = +packingSelect.options[packingSelect.selectedIndex]?.dataset.price || 0;
-      packingPrice *= quantity;
+      let packingPrice = 0;
+      if (category === "Термоусадочная") {
+        const thermalLength = +document.getElementById('thermal-length').value || 0;
+        packingPrice = quantity * thermalLength * 0.2;
+      } else {
+        packingPrice = +packingSelect.options[packingSelect.selectedIndex]?.dataset.price || 0;
+        packingPrice *= quantity;
+      }
 
       let total = packingPrice + (requiredBoxes * deliveryPricePerBox);
       options.forEach(option => {
@@ -277,7 +324,9 @@
       resultBlock.innerHTML = `<strong>Итоговая стоимость:</strong> ${total.toFixed(2)} ₽<br>
         Коробов нужно: <strong>${requiredBoxes}</strong><br>
         По ${unitsPerBox} товаров в коробке<br>
+        ${(weight ? '(учтено ограничение: до 25 кг в коробке)<br>' : '')}
         Доставка: ${deliveryPricePerBox} ₽/короб`;
+
     }
   </script>
 </body>
