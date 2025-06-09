@@ -127,7 +127,7 @@
 <input type="number" id="height" placeholder="Например: 15">
 
     
-<label class="label-icon"><i class="fas fa-boxes-stacked"></i> Количество:</label>
+<label class="label-icon"><i class="fas fa-boxes-stacked"></i> Количество товара:</label>
 <input type="number" id="quantity" placeholder="Например: 100">
 
     <label class="label-icon"><i class="fas fa-weight-hanging"></i> Вес (кг) товара:</label>
@@ -135,17 +135,17 @@
 
     <div class="section-title">Дополнительные услуги</div>
 <div class="checkbox-group">
-  <label><input type="checkbox" class="option" data-price="2"> Привоз товара на склад + пересчёт — 2₽</label>
-  <label><input type="checkbox" class="option" data-price="4"> Проверка товара — 4₽</label>
-  <label><input type="checkbox" class="option" data-price="4"> Упаковка стандарт — 4₽</label>
-  <label><input type="checkbox" class="option" data-price="6"> Упаковка нестандарт (цены оговариваются) — от 6₽</label>
-  <label><input type="checkbox" class="option" data-price="2"> Проверка на брак — 2₽</label>
-  <label><input type="checkbox" class="option" data-price="2"> Вкладыши (листовки) — 2₽</label>
-  <label><input type="checkbox" class="option" data-price="9"> Упаковка в зип-пакеты — 9₽</label>
-  <label><input type="checkbox" class="option" data-price="9"> Упаковка в зип-пакеты с клеевым слоем — 9₽</label>
-  <label><input type="checkbox" class="option" data-price="5"> Проверка размеров — 5₽</label>
-  <label><input type="checkbox" class="option" data-price="4"> Вскрытие возвратов — 4₽</label>
-  <label><input type="checkbox" class="option" data-price="15"> Возвратный короб (работа + маркировка работы) — от 15₽</label>
+  <label><input type="checkbox" class="option" data-price="2"> Привоз товара на склад + пересчёт</label>
+  <label><input type="checkbox" class="option" data-price="4"> Проверка товара</label>
+  <label><input type="checkbox" class="option" data-price="4"> Упаковка стандарт</label>
+  <label><input type="checkbox" class="option" data-price="6"> Упаковка нестандарт (цены оговариваются)</label>
+  <label><input type="checkbox" class="option" data-price="2"> Проверка на брак</label>
+  <label><input type="checkbox" class="option" data-price="2"> Вкладыши (листовки)</label>
+  <label><input type="checkbox" class="option" data-price="9"> Упаковка в зип-пакеты</label>
+  <label><input type="checkbox" class="option" data-price="9"> Упаковка в зип-пакеты с клеевым слоем</label>
+  <label><input type="checkbox" class="option" data-price="5"> Проверка размеров</label>
+  <label><input type="checkbox" class="option" data-price="4"> Вскрытие возвратов</label>
+  <label><input type="checkbox" class="option" data-price="15"> Возвратный короб (работа + маркировка работы)</label>
 </div>
 <div class="section-title">Упаковка</div>
     <div class="select-group">
@@ -204,9 +204,17 @@
     }
 
     function filterWarehouses() {
-      const query = document.getElementById('warehouse-search').value;
-      renderWarehouses(query);
-    }
+  const input = document.getElementById('warehouse-search');
+  const query = input.value.toLowerCase();
+  renderWarehouses(query);
+
+  const matched = warehousesList.find(wh => wh.label.toLowerCase().startsWith(query));
+  if (matched) {
+    document.getElementById('warehouse-select').value = matched.value;
+    input.value = matched.label;
+    input.setSelectionRange(query.length, matched.label.length);
+  }
+}
 
     window.addEventListener('DOMContentLoaded', () => renderWarehouses());
 
