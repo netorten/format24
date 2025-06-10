@@ -22,7 +22,7 @@
     }
     h1 {
       text-align: center;
-      background: linear-gradient(90deg, #3366ff, #8844ff);
+      background: linear-gradient(90deg, #48030b, #48030b);
       color: white;
       padding: 20px;
       border-radius: 12px 12px 0 0;
@@ -51,7 +51,7 @@
     .section-title {
       margin-top: 30px;
       font-size: 18px;
-      color: #3366ff;
+      color: #48030b;
       font-weight: bold;
       border-bottom: 1px solid #ddd;
       padding-bottom: 5px;
@@ -72,7 +72,7 @@
       margin-top: 25px;
       width: 100%;
       padding: 14px;
-      background: linear-gradient(90deg, #3366ff, #8844ff);
+      background: linear-gradient(90deg, #3366ff, #48030b);
       color: white;
       font-size: 16px;
       border: none;
@@ -210,10 +210,8 @@
 
   const matched = warehousesList.find(wh => wh.label.toLowerCase().startsWith(query));
   if (matched) {
-    document.getElementById('warehouse-select').value = matched.value;
-    input.value = matched.label;
-    input.setSelectionRange(query.length, matched.label.length);
-  }
+  document.getElementById('warehouse-select').value = matched.value;
+}
 }
 
     window.addEventListener('DOMContentLoaded', () => renderWarehouses());
